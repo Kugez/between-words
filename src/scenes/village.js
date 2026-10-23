@@ -1,11 +1,9 @@
 import { buildVillage } from '../art/village.js';
-import { DIALOGUES } from '../data/river.js';
+import { DIALOGUES, TALKERS } from '../data/river.js';
 import { allSeen } from '../progress.js';
 import { createTalkScene } from '../stage.js';
 import { lerp, tween, wait } from '../tween.js';
 import { openLetter } from '../ui/letter.js';
-
-const TALKERS = ['fisher', 'child', 'baker', 'elder'];
 
 export function villageScene({ t, state, go, save }) {
   const letterReady = () => allSeen(state, 'river') && !state.letterDone;

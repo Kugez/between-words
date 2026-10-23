@@ -34,7 +34,19 @@ export function createStage({ world, state, t, save, go, sceneId }) {
   }
 
   function notebook(focus) {
-    openNotebook({ state, t, focus, save, onClose: () => { refreshBubble(); stage.onNotebookClose?.(); } });
+    openNotebook({ state, t, focus, save, replay, onClose: () => { refreshBubble(); stage.onNotebookClose?.(); } });
+  }
+
+  // A way to watch a heard sentence again, when it was said in this scene and
+  // nothing else is playing. The notebook reopens on the same glyph afterwards.
+  function replay(glyphs, glyph) {
+    const beat = !stage.talking && stage.findBeat?.(glyphs);
+    if (!beat) return null;
+    return async () => {
+      document.querySelector('.overlay--notebook [data-action="close"]')?.click();
+      await play([beat]);
+      notebook(glyph);
+    };
   }
 
   svg.addEventListener('click', () => advance?.());
@@ -263,18 +275,39 @@ export function createStage({ world, state, t, save, go, sceneId }) {
 }
 
 // A scene of villagers to talk to. `dialogueFor(id)` picks what someone says
-// next and `afterTalk(key, id)` reacts once a conversation ends.
+// next and `afterTalk(key, id)` reacts once a conversation ends. Talkers are met
+// in order: someone whose turn has not come yet points at the one to visit first.
 export function createTalkScene({ sceneId, world, dialogues, talkers, dialogueFor, isNew, afterTalk, hint, state, t, save, go }) {
   const stage = createStage({ world, state, t, save, go, sceneId });
   const { figures } = world;
   let queued = null;
 
+  // The first talker not yet visited, if someone is waiting for them.
+  function waitingFor(id) {
+    const next = talkers.find((who) => !state.talked[who]);
+    return next && talkers.indexOf(id) > talkers.indexOf(next) ? next : null;
+  }
+
   function refreshMarkers() {
-    for (const id of talkers) figures[id].el.classList.toggle('has-news', isNew(id));
+    for (const id of talkers) figures[id].el.classList.toggle('has-news', !waitingFor(id) && isNew(id));
   }
   stage.onNotebookClose = refreshMarkers;
 
+  // Beats said here whose speakers all stand in this scene can be watched again.
+  const key = (glyphs) => glyphs.join(' ');
+  const beats = new Map();
+  for (const beat of Object.values(dialogues).flat()) {
+    const people = [beat.who, beat.act?.who, beat.act?.from, beat.act?.to].filter((who) => who && who !== 'player');
+    if (beat.say && people.every((who) => figures[who]) && !beats.has(key(beat.say))) beats.set(key(beat.say), beat);
+  }
+  stage.findBeat = (glyphs) => beats.get(key(glyphs));
+
   async function talk(id) {
+    const next = waitingFor(id);
+    if (next) {
+      await stage.play([{ act: { type: 'point', who: id, at: next } }]);
+      return;
+    }
     const key = dialogueFor(id);
     await stage.play(dialogues[key]);
     refreshMarkers();

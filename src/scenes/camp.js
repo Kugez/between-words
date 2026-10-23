@@ -1,9 +1,7 @@
 import { buildCamp } from '../art/camp.js';
-import { DIALOGUES } from '../data/mountain.js';
+import { DIALOGUES, TALKERS } from '../data/mountain.js';
 import { allSeen } from '../progress.js';
 import { createTalkScene } from '../stage.js';
-
-const TALKERS = ['mason', 'smith', 'friend', 'chief'];
 
 export function campScene({ t, state, go, save }) {
   const ready = () => allSeen(state, 'mountain') && TALKERS.every((who) => state.talked[who]);

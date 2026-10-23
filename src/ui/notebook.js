@@ -1,11 +1,11 @@
 import { h } from '../dom.js';
 import { glyphSvg } from '../glyph.js';
 import { SCRIPTS, WORDS, meaningOf } from '../data/language.js';
-import { checkPage, openPages, pageOf, wordLabel } from '../progress.js';
+import { checkPage, openPages, pageOf, pageScore, wordLabel } from '../progress.js';
 import { sentenceRow } from './sentence.js';
 import { openOverlay } from './overlay.js';
 
-export function openNotebook({ state, t, focus, save, onClose }) {
+export function openNotebook({ state, t, focus, save, replay, onClose }) {
   const pages = openPages(state);
   let page = (focus && pageOf(focus)) || pages.find((p) => !state.confirmed[p.id]) || pages[0];
   let selected = focus && state.seen[focus] ? focus : null;
@@ -26,9 +26,22 @@ export function openNotebook({ state, t, focus, save, onClose }) {
     if (word) state.guesses[glyph] = word;
     else delete state.guesses[glyph];
     const result = checkPage(state, page);
-    message = result === 'confirmed' ? t('pageConfirmed') : result === 'wrong' ? t('pageWrong') : '';
+    if (result === 'wrong') state.pageMisses[page.id] = (state.pageMisses[page.id] || 0) + 1;
+    message = result === 'confirmed' ? t('pageConfirmed') : result === 'wrong' ? wrongMessage() : '';
     save();
     render(result === 'confirmed');
+  }
+
+  // Wrong tries earn help: first how many are right, then which glyph is off.
+  function misses() {
+    return state.pageMisses[page.id] || 0;
+  }
+
+  function wrongMessage() {
+    const { right, total } = pageScore(state, page);
+    if (misses() >= 4) return t('pageOff');
+    if (misses() >= 2) return `${t('pageWrong')} ${t('pageScore').replace('{n}', right).replace('{total}', total)}`;
+    return t('pageWrong');
   }
 
   function card(glyph) {
@@ -46,9 +59,19 @@ export function openNotebook({ state, t, focus, save, onClose }) {
       h('option', { value: '' }, '—'),
       words.map((w) => h('option', { value: w, selected: (known ? meaningOf(glyph) : state.guesses[glyph]) === w }, wordLabel(w, state.lang))),
     );
-    return h('div', { class: `card${known ? ' is-known' : ''}${selected === glyph ? ' is-selected' : ''}`, 'data-card': glyph },
+    const off = !known && misses() >= 4 && message && pageScore(state, page).off === glyph;
+    return h('div', { class: `card${known ? ' is-known' : ''}${selected === glyph ? ' is-selected' : ''}${off ? ' is-off' : ''}`, 'data-card': glyph },
       h('button', { class: 'card__glyph', 'aria-label': t('showSentences'), onclick: () => { selected = glyph; render(); } }, glyphSvg(glyph)),
       select,
+    );
+  }
+
+  // A heard sentence, with a button to watch it again when the scene allows.
+  function seenRow(glyphs) {
+    const again = replay?.(glyphs, selected);
+    return h('div', { class: 'seen' },
+      sentenceRow(state, glyphs, { highlight: selected }),
+      again && h('button', { class: 'seen__replay', 'data-action': 'replay', 'aria-label': t('watchAgain'), title: t('watchAgain'), onclick: again }, '▶'),
     );
   }
 
@@ -78,7 +101,7 @@ export function openNotebook({ state, t, focus, save, onClose }) {
         message || (confirmed ? t('pageConfirmed') : t('pageHint'))),
       h('section', { class: 'notebook__seen' },
         selected
-          ? [h('h3', null, t('seenIn')), ...sentences.map((g) => sentenceRow(state, g, { highlight: selected }))]
+          ? [h('h3', null, t('seenIn')), ...sentences.map((g) => seenRow(g))]
           : h('p', { class: 'muted' }, t('pickGlyph')),
       ),
     );

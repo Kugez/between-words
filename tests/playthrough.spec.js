@@ -66,7 +66,29 @@ async function continueUntil(page, done) {
 test('the whole game can be played from start to finish', async ({ page }) => {
   // Chapter 1: the river village.
   await enterVillage(page);
+  // Villagers are met in order: the elder points to the fisher first.
+  await expect(page.locator('.has-news [data-hotspot="fisher"]')).toHaveCount(1);
+  await expect(page.locator('.has-news [data-hotspot="elder"]')).toHaveCount(0);
+  await page.locator('[data-hotspot="elder"]').click();
+  await finishConversation(page);
+  await expect(page.locator('.has-news [data-hotspot="fisher"]')).toHaveCount(1);
+  await page.locator('[data-action="notebook"]').click();
+  await page.locator('[data-page="II"]').click();
+  await expect(page.locator('[data-card="tuli"].card--unseen')).toBeVisible();
+  await page.locator('.overlay [data-action="close"]').click();
+
   for (const who of ['fisher', 'child', 'baker', 'elder']) await talkTo(page, who);
+
+  // A heard sentence can be watched again from the notebook.
+  await page.locator('[data-action="notebook"]').click();
+  await page.locator('[data-page="I"]').click();
+  await page.locator('[data-card="lapsi"] .card__glyph').click();
+  await page.locator('.overlay--notebook [data-action="replay"]').first().click();
+  await expect(page.locator('.overlay--notebook')).toHaveCount(0);
+  await expect(page.locator('.bubble [data-glyph="lapsi"]').first()).toBeVisible();
+  await finishConversation(page);
+  await expect(page.locator('.overlay--notebook [data-card="lapsi"].is-selected')).toBeVisible();
+  await page.locator('.overlay [data-action="close"]').click();
 
   // Tapping a glyph in a speech bubble opens the notebook on its page.
   await page.locator('[data-hotspot="fisher"]').click();
@@ -83,6 +105,13 @@ test('the whole game can be played from start to finish', async ({ page }) => {
   await choose(page, 'monta', 'monta');
   await choose(page, 'silta', 'silta');
   await expect(status).toHaveAttribute('data-status', 'wrong');
+  // Repeated wrong tries tell how many are right, then point at the wrong glyph.
+  await choose(page, 'ei', 'paha');
+  await expect(status).toContainText(/2\/3|2 of 3/);
+  await choose(page, 'ei', 'yksi');
+  await choose(page, 'ei', 'ottaa');
+  await expect(page.locator('[data-card="ei"]')).toHaveClass(/is-off/);
+  await expect(page.locator('[data-card="monta"]')).not.toHaveClass(/is-off/);
   await choose(page, 'ei', 'ei');
   await expect(status).toHaveAttribute('data-status', 'confirmed');
   await expect(page.locator('[data-guess="ei"]')).toBeDisabled();
