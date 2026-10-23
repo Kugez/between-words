@@ -1,12 +1,13 @@
 import { h } from '../dom.js';
 import { glyphSvg } from '../glyph.js';
-import { PAGES, WORDS } from '../data/river.js';
-import { checkPage, pageOf, wordLabel } from '../progress.js';
+import { SCRIPTS, WORDS, meaningOf } from '../data/language.js';
+import { checkPage, openPages, pageOf, wordLabel } from '../progress.js';
 import { sentenceRow } from './sentence.js';
 import { openOverlay } from './overlay.js';
 
 export function openNotebook({ state, t, focus, save, onClose }) {
-  let page = (focus && pageOf(focus)) || PAGES.find((p) => !state.confirmed[p.id]) || PAGES[0];
+  const pages = openPages(state);
+  let page = (focus && pageOf(focus)) || pages.find((p) => !state.confirmed[p.id]) || pages[0];
   let selected = focus && state.seen[focus] ? focus : null;
   let message = '';
 
@@ -43,7 +44,7 @@ export function openNotebook({ state, t, focus, save, onClose }) {
       onchange: (e) => choose(glyph, e.target.value),
     },
       h('option', { value: '' }, '—'),
-      words.map((w) => h('option', { value: w, selected: state.guesses[glyph] === w }, wordLabel(w, state.lang))),
+      words.map((w) => h('option', { value: w, selected: (known ? meaningOf(glyph) : state.guesses[glyph]) === w }, wordLabel(w, state.lang))),
     );
     return h('div', { class: `card${known ? ' is-known' : ''}${selected === glyph ? ' is-selected' : ''}`, 'data-card': glyph },
       h('button', { class: 'card__glyph', 'aria-label': t('showSentences'), onclick: () => { selected = glyph; render(); } }, glyphSvg(glyph)),
@@ -59,12 +60,17 @@ export function openNotebook({ state, t, focus, save, onClose }) {
     body.replaceChildren(
       h('h2', { class: 'notebook__title' }, t('notebook')),
       h('nav', { class: 'notebook__tabs' },
-        PAGES.map((p) =>
-          h('button', {
-            class: `tab${p === page ? ' is-active' : ''}${state.confirmed[p.id] ? ' is-known' : ''}`,
-            'data-page': p.id,
-            onclick: () => { page = p; message = ''; render(); },
-          }, p.id),
+        SCRIPTS.filter((script) => pages.some((p) => p.script === script)).map((script) =>
+          h('div', { class: `notebook__script notebook__script--${script}` },
+            h('span', { class: 'notebook__script-name' }, t(`script_${script}`)),
+            pages.filter((p) => p.script === script).map((p) =>
+              h('button', {
+                class: `tab${p === page ? ' is-active' : ''}${state.confirmed[p.id] ? ' is-known' : ''}`,
+                'data-page': p.id,
+                onclick: () => { page = p; message = ''; render(); },
+              }, p.id),
+            ),
+          ),
         ),
       ),
       h('div', { class: `notebook__cards${celebrate ? ' celebrate' : ''}` }, page.glyphs.map(card)),

@@ -16,8 +16,13 @@ confirmed only when every guess on it is right, and then those glyphs are
 translated wherever they appear. To finish the chapter, write a letter for a
 child in the villagers' own language.
 
-The river language lives in `src/data/river.js`, together with its grammar
-notes and every scripted conversation.
+In the second chapter you cross the river to the mountain people, who carve
+a different script and build their sentences the other way round. In the
+last chapter both peoples stand at the ends of the broken bridge, and you
+translate their messages to each other until they start building again.
+
+Each language lives in its own file with its grammar notes and every
+scripted conversation: `src/data/river.js` and `src/data/mountain.js`.
 
 ## Running locally
 

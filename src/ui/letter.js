@@ -1,16 +1,13 @@
-import { h, s } from '../dom.js';
-import { glyphSvg } from '../glyph.js';
-import { ALL_GLYPHS, LETTER } from '../data/river.js';
-import { isKnown, wordLabel } from '../progress.js';
-import { openOverlay } from './overlay.js';
-
-const MAX = 7;
+import { s } from '../dom.js';
+import { LETTER } from '../data/river.js';
+import { glyphsOf } from '../data/language.js';
+import { openWriter } from './writer.js';
 
 // The child's drawing: the child, many fish, an arrow over the river to a
 // friend on the far bank.
 function drawing() {
   const fish = (x, y) => s('path', { d: `M${x - 16},${y} C${x - 8},${y - 9} ${x + 8},${y - 9} ${x + 12},${y} C${x + 8},${y + 9} ${x - 8},${y + 9} ${x - 16},${y} Z M${x + 12},${y} L${x + 20},${y - 7} L${x + 20},${y + 7} Z` });
-  return s('svg', { class: 'letter__drawing', viewBox: '0 0 400 200', 'aria-hidden': 'true' },
+  return s('svg', { class: 'writer__drawing', viewBox: '0 0 400 200', 'aria-hidden': 'true' },
     s('rect', { x: 4, y: 4, width: 392, height: 192, rx: 6, fill: '#efe6d2' }),
     s('g', { fill: 'none', stroke: '#5a4636', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
       // The child, with the tuft of hair.
@@ -27,54 +24,16 @@ function drawing() {
 }
 
 export function openLetter({ state, t, onSubmit, onClose }) {
-  const written = [];
-  const body = h('div', { class: 'letter' });
-  const overlay = openOverlay({ className: 'overlay--letter', label: t('letterTitle'), closeLabel: t('close'), onClose, content: body });
-  let feedback = '';
-
-  const keys = ALL_GLYPHS.filter((g) => state.seen[g]);
-
-  function render() {
-    body.replaceChildren(
-      h('h2', null, t('letterTitle')),
-      h('p', { class: 'muted' }, t('letterPrompt')),
-      drawing(),
-      h('div', { class: 'letter__line', 'data-letter-line': written.join(' ') },
-        Array.from({ length: Math.max(written.length + 1, 5) }, (_, i) =>
-          h('span', { class: `slot${written[i] ? ' is-filled' : ''}` }, written[i] ? glyphSvg(written[i]) : ''),
-        ),
-      ),
-      h('div', { class: 'letter__keys' },
-        keys.map((g) =>
-          h('button', {
-            class: 'key',
-            'data-key': g,
-            disabled: written.length >= MAX,
-            onclick: () => { written.push(g); feedback = ''; render(); },
-          }, glyphSvg(g), h('small', null, isKnown(state, g) ? wordLabel(g, state.lang) : ' ')),
-        ),
-      ),
-      h('p', { class: 'letter__feedback', 'data-feedback': feedback ? 'wrong' : '' }, feedback),
-      h('div', { class: 'letter__actions' },
-        h('button', { class: 'button button--quiet', 'data-action': 'erase', disabled: !written.length, onclick: () => { written.pop(); render(); } }, t('erase')),
-        h('button', {
-          class: 'button',
-          'data-action': 'send',
-          disabled: !written.length,
-          onclick: () => {
-            if (written.join(' ') === LETTER.join(' ')) {
-              overlay.close();
-              onSubmit();
-            } else {
-              feedback = t('letterWrong');
-              render();
-            }
-          },
-        }, t('send')),
-      ),
-    );
-  }
-
-  render();
-  return overlay;
+  return openWriter({
+    state,
+    t,
+    title: t('letterTitle'),
+    prompt: t('letterPrompt'),
+    source: drawing(),
+    keys: glyphsOf('river').filter((g) => state.seen[g]),
+    answer: LETTER,
+    hints: [t('letterHint1'), t('letterHint2')],
+    onSolved: onSubmit,
+    onClose,
+  });
 }

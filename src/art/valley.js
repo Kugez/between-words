@@ -24,7 +24,7 @@ function fire(x, y) {
 }
 
 // The opening view: night valley, a river, fires on both banks and the fallen bridge.
-export function valleyBackdrop() {
+export function valleyBackdrop({ mended = false } = {}) {
   const rand = seeded(7);
 
   const stars = Array.from({ length: 140 }, () =>
@@ -75,10 +75,14 @@ export function valleyBackdrop() {
       fill: 'url(#river)',
       opacity: 0.85,
     }),
-    // Fallen bridge: two stubs reaching across, the gap between them.
-    s('path', { d: 'M560,742 L700,742 L712,750 L560,750 Z', fill: '#1a1d2b' }),
-    s('path', { d: 'M862,742 L1040,742 L1040,750 L874,750 Z', fill: '#1a1d2b' }),
-    s('path', { d: 'M706,748 L720,790 M868,748 L850,786', stroke: '#1a1d2b', 'stroke-width': 5 }),
+    // The bridge: two stubs with a gap between them until the end of the game.
+    ...(mended
+      ? [s('path', { d: 'M560,742 L1040,742 L1040,750 L560,750 Z', fill: '#1a1d2b' })]
+      : [
+        s('path', { d: 'M560,742 L700,742 L712,750 L560,750 Z', fill: '#1a1d2b' }),
+        s('path', { d: 'M862,742 L1040,742 L1040,750 L874,750 Z', fill: '#1a1d2b' }),
+        s('path', { d: 'M706,748 L720,790 M868,748 L850,786', stroke: '#1a1d2b', 'stroke-width': 5 }),
+      ]),
     fire(470, 720),
     fire(1130, 715),
     s('ellipse', { class: 'mist', cx: 800, cy: 790, rx: 900, ry: 60, fill: 'url(#mist)', opacity: 0.12 }),

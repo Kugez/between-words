@@ -1,6 +1,6 @@
-import { ALL_GLYPHS, PAGES, WORDS } from './data/river.js';
+import { PAGES, WORDS, glyphsOf, meaningOf } from './data/language.js';
 
-// Rules about what the player knows, shared by the scene, notebook and letter.
+// Rules about what the player knows, shared by the scenes, notebook and writing pad.
 
 export function recordSentence(state, glyphs) {
   for (const g of glyphs) state.seen[g] = true;
@@ -16,8 +16,13 @@ export function isKnown(state, glyph) {
   return !!state.confirmed[pageOf(glyph)?.id];
 }
 
-export function allSeen(state) {
-  return ALL_GLYPHS.every((g) => state.seen[g]);
+export function allSeen(state, script = 'river') {
+  return glyphsOf(script).every((g) => state.seen[g]);
+}
+
+// Notebook pages the player can open: the mountain pages appear after the crossing.
+export function openPages(state) {
+  return PAGES.filter((p) => p.script === 'river' || state.chapter >= 2);
 }
 
 // 'confirmed', 'wrong' (all filled in but something is off) or 'open'.
@@ -25,13 +30,15 @@ export function checkPage(state, page) {
   if (state.confirmed[page.id]) return 'confirmed';
   const filled = page.glyphs.every((g) => state.seen[g] && state.guesses[g]);
   if (!filled) return 'open';
-  if (page.glyphs.every((g) => state.guesses[g] === g)) {
+  if (page.glyphs.every((g) => state.guesses[g] === meaningOf(g))) {
     state.confirmed[page.id] = true;
     return 'confirmed';
   }
   return 'wrong';
 }
 
+// Label for a word id or a glyph id.
 export function wordLabel(id, lang) {
-  return WORDS[id]?.[lang] ?? WORDS[id]?.en ?? id;
+  const word = WORDS[meaningOf(id)];
+  return word?.[lang] ?? word?.en ?? id;
 }
