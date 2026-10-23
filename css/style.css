@@ -522,6 +522,34 @@ body {
   margin-bottom: 0.6rem;
 }
 
+.seen {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.seen .sentence {
+  margin-bottom: 0;
+}
+
+.seen__replay {
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 2px solid rgba(181, 118, 47, 0.5);
+  background: #f9eedb;
+  color: #8a5520;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.seen__replay:hover,
+.seen__replay:focus-visible {
+  background: #f3dfbd;
+}
+
 .sentence__word {
   display: flex;
   flex-direction: column;

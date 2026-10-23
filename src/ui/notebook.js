@@ -5,7 +5,7 @@ import { checkPage, openPages, pageOf, pageScore, wordLabel } from '../progress.
 import { sentenceRow } from './sentence.js';
 import { openOverlay } from './overlay.js';
 
-export function openNotebook({ state, t, focus, save, onClose }) {
+export function openNotebook({ state, t, focus, save, replay, onClose }) {
   const pages = openPages(state);
   let page = (focus && pageOf(focus)) || pages.find((p) => !state.confirmed[p.id]) || pages[0];
   let selected = focus && state.seen[focus] ? focus : null;
@@ -66,6 +66,15 @@ export function openNotebook({ state, t, focus, save, onClose }) {
     );
   }
 
+  // A heard sentence, with a button to watch it again when the scene allows.
+  function seenRow(glyphs) {
+    const again = replay?.(glyphs, selected);
+    return h('div', { class: 'seen' },
+      sentenceRow(state, glyphs, { highlight: selected }),
+      again && h('button', { class: 'seen__replay', 'data-action': 'replay', 'aria-label': t('watchAgain'), title: t('watchAgain'), onclick: again }, '▶'),
+    );
+  }
+
   function render(celebrate = false) {
     const confirmed = !!state.confirmed[page.id];
     const sentences = selected
@@ -92,7 +101,7 @@ export function openNotebook({ state, t, focus, save, onClose }) {
         message || (confirmed ? t('pageConfirmed') : t('pageHint'))),
       h('section', { class: 'notebook__seen' },
         selected
-          ? [h('h3', null, t('seenIn')), ...sentences.map((g) => sentenceRow(state, g, { highlight: selected }))]
+          ? [h('h3', null, t('seenIn')), ...sentences.map((g) => seenRow(g))]
           : h('p', { class: 'muted' }, t('pickGlyph')),
       ),
     );

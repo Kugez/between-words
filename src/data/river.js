@@ -35,12 +35,16 @@ export const LETTER = ['mina', 'sina', 'kala', 'monta', 'antaa'];
 
 // Each beat: who speaks (optional), what they say in glyphs (optional),
 // and one gesture. Targets are characters, 'self', 'player' or scene points.
+// The order the player meets the speakers in; each one waits for the one before.
+export const TALKERS = ['fisher', 'child', 'baker', 'elder'];
+
 export const DIALOGUES = {
   fisher: [
     { who: 'fisher', say: ['mina'], act: { type: 'point', who: 'fisher', at: 'self' } },
     { who: 'fisher', say: ['sina'], act: { type: 'point', who: 'fisher', at: 'player' } },
     { who: 'fisher', say: ['kala'], act: { type: 'hold', who: 'fisher', item: 'fish' } },
     { who: 'fisher', say: ['kala', 'monta'], act: { type: 'point', who: 'fisher', at: 'rack' } },
+    { who: 'fisher', say: ['lapsi'], act: { type: 'point', who: 'fisher', at: 'child' } },
     { who: 'fisher', say: ['lapsi', 'kala', 'haluta'], act: { type: 'point', who: 'fisher', at: 'child' } },
   ],
   child: [

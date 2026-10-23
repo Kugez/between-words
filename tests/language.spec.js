@@ -19,3 +19,18 @@ for (const lang of [river, mountain]) {
     });
   }
 }
+
+// Meeting the speakers in order, every sentence brings at most one glyph the
+// player has not heard yet, so its meaning can be worked out from the scene.
+for (const lang of [river, mountain]) {
+  test(`${lang.TALKERS[0]}'s side brings one new glyph at a time`, () => {
+    const heard = new Set();
+    for (const who of lang.TALKERS) {
+      for (const { say } of lang.DIALOGUES[who].filter((line) => line.say)) {
+        const fresh = new Set(say.filter((g) => !heard.has(g)));
+        expect(fresh.size, `${who}: "${say.join(' ')}" brings ${[...fresh].join(', ')}`).toBeLessThanOrEqual(1);
+        say.forEach((g) => heard.add(g));
+      }
+    }
+  });
+}
