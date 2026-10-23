@@ -38,9 +38,11 @@ export const DIALOGUES = {
     { who: 'mason', say: ['m_kivi'], act: { type: 'hold', who: 'mason', item: 'stone' } },
     { who: 'mason', say: ['m_kivi', 'm_kivi'], act: { type: 'point', who: 'mason', at: 'pile' } },
     { who: 'mason', say: ['m_rakentaa', 'm_mina'], act: { type: 'build', who: 'mason', item: 'stone', at: 'wall' } },
+    { who: 'mason', say: ['m_antaa', 'm_mina', 'm_kivi', 'm_lle', 'm_silta'], act: { type: 'point', who: 'mason', at: 'bridge' } },
     { who: 'mason', say: ['m_antaa', 'm_mina', 'm_kivi', 'm_lle', 'm_sina'], act: { type: 'give', from: 'mason', to: 'player', item: 'stone' } },
   ],
   smith: [
+    { who: 'smith', say: ['m_sina'], act: { type: 'point', who: 'smith', at: 'player' } },
     { who: 'smith', say: ['m_tuli'], act: { type: 'point', who: 'smith', at: 'forge' } },
     { who: 'smith', say: ['m_hyva', 'm_tuli'], act: { type: 'nod', who: 'smith' } },
     { who: 'smith', say: ['m_antaa', 'm_mina', 'm_tuli', 'm_lle', 'm_sina'], act: { type: 'give', from: 'smith', to: 'player', item: 'ember' } },
@@ -57,6 +59,7 @@ export const DIALOGUES = {
     { who: 'chief', say: ['m_ei', 'm_hyva', 'm_silta'], act: { type: 'shake', who: 'chief', at: 'bridge' } },
     { who: 'chief', say: ['m_haluta', 'm_mina', 'm_silta'], act: { type: 'point', who: 'chief', at: 'self' } },
     { who: 'chief', say: ['m_sina'], act: { type: 'point', who: 'chief', at: 'player' } },
+    { who: 'chief', say: ['m_antaa', 'm_sina', 'm_kivi', 'm_lle', 'm_silta'], act: { type: 'point', who: 'chief', at: 'bridge' } },
   ],
   // Once every mountain glyph has been seen, the chief leads the way to the bridge.
   summon: [
