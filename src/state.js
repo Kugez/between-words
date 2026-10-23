@@ -14,6 +14,7 @@ export function freshState(lang) {
     sentences: [],
     guesses: {},
     confirmed: {},
+    pageMisses: {},
     talked: {},
     letterDone: false,
     chapter: 1,

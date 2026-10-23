@@ -83,6 +83,13 @@ test('the whole game can be played from start to finish', async ({ page }) => {
   await choose(page, 'monta', 'monta');
   await choose(page, 'silta', 'silta');
   await expect(status).toHaveAttribute('data-status', 'wrong');
+  // Repeated wrong tries tell how many are right, then point at the wrong glyph.
+  await choose(page, 'ei', 'paha');
+  await expect(status).toContainText(/2\/3|2 of 3/);
+  await choose(page, 'ei', 'yksi');
+  await choose(page, 'ei', 'ottaa');
+  await expect(page.locator('[data-card="ei"]')).toHaveClass(/is-off/);
+  await expect(page.locator('[data-card="monta"]')).not.toHaveClass(/is-off/);
   await choose(page, 'ei', 'ei');
   await expect(status).toHaveAttribute('data-status', 'confirmed');
   await expect(page.locator('[data-guess="ei"]')).toBeDisabled();

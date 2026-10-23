@@ -37,6 +37,13 @@ export function checkPage(state, page) {
   return 'wrong';
 }
 
+// How many filled-in guesses on a page are right, and the first one that is not.
+export function pageScore(state, page) {
+  const right = page.glyphs.filter((g) => state.guesses[g] === meaningOf(g));
+  const off = page.glyphs.find((g) => state.guesses[g] && state.guesses[g] !== meaningOf(g));
+  return { right: right.length, total: page.glyphs.length, off };
+}
+
 // Label for a word id or a glyph id.
 export function wordLabel(id, lang) {
   const word = WORDS[meaningOf(id)];

@@ -448,6 +448,11 @@ body {
   background: #f9eedb;
 }
 
+.card.is-off {
+  border-color: #c0573e;
+  border-style: dashed;
+}
+
 .celebrate .card {
   animation: seal 0.7s ease both;
 }
