@@ -16,13 +16,17 @@ export function freshState(lang) {
     confirmed: {},
     talked: {},
     letterDone: false,
+    chapter: 1,
+    bridgeRound: 0,
+    finished: false,
   };
 }
 
 export function loadState(fallbackLang) {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved && saved.version === VERSION) return saved;
+    // Fields added after a save was written get their defaults.
+    if (saved && saved.version === VERSION) return { ...freshState(fallbackLang), ...saved };
   } catch {
     // Ignore unreadable or missing saves.
   }

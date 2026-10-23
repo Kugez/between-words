@@ -1,5 +1,11 @@
 import { s } from './dom.js';
-import { GLYPHS } from './data/river.js';
+import { GLYPHS, scriptOf } from './data/language.js';
+
+// The river people write with a round brush, the mountain people carve with a chisel.
+const PEN = {
+  river: { 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+  mountain: { 'stroke-linecap': 'square', 'stroke-linejoin': 'miter' },
+};
 
 // A glyph as its own <svg>, usable in HTML or nested inside the scene.
 export function glyphSvg(id, props = {}) {
@@ -9,8 +15,7 @@ export function glyphSvg(id, props = {}) {
       fill: 'none',
       stroke: 'currentColor',
       'stroke-width': 7,
-      'stroke-linecap': 'round',
-      'stroke-linejoin': 'round',
+      ...PEN[scriptOf(id)],
     }),
   );
 }

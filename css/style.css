@@ -176,38 +176,46 @@ body {
 
 /* --- Village ------------------------------------------------------------ */
 
-.scene--village {
+.scene--world {
   background: linear-gradient(#121827 0 45%, #323549 55% 100%);
 }
 
-.village .figure {
+.scene--world .figure {
   cursor: pointer;
 }
 
-.village.is-talking .figure {
+.is-talking .figure {
   cursor: default;
 }
 
-.village .marker {
+.scene--world .marker {
   opacity: 0;
   transition: opacity 0.4s;
   animation: bob 1.6s ease-in-out infinite;
 }
 
-.village .figure.has-news .marker {
+.scene--world .figure.has-news .marker {
   opacity: 1;
 }
 
-.village.is-talking .marker {
+.is-talking .marker {
   opacity: 0;
 }
 
-.village .figure:hover .body {
+.scene--world .figure:hover .body {
   filter: brightness(1.15);
 }
 
 .bubble {
   animation: fade-in 0.25s ease both;
+}
+
+.bubble__shape {
+  fill: #efe6d2;
+}
+
+.bubble--player .bubble__shape {
+  fill: #f3d6a8;
 }
 
 .bubble__glyph {
@@ -367,8 +375,24 @@ body {
 
 .notebook__tabs {
   display: flex;
-  gap: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
   margin-bottom: 1rem;
+}
+
+.notebook__script {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.notebook__script-name {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b5d4f;
+  margin-right: 0.2rem;
 }
 
 .tab {
@@ -518,13 +542,13 @@ body {
 
 /* --- Letter ------------------------------------------------------------- */
 
-.letter__drawing {
+.writer__drawing {
   display: block;
   width: min(100%, 26rem);
   margin: 0 auto 1rem;
 }
 
-.letter__line {
+.writer__line {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -543,7 +567,7 @@ body {
   border-bottom-color: #2a2236;
 }
 
-.letter__keys {
+.writer__keys {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(3.6rem, 1fr));
   gap: 0.4rem;
@@ -578,7 +602,26 @@ body {
   outline: none;
 }
 
-.letter__feedback {
+.writer__hints {
+  margin: 0.5rem auto 0;
+  padding: 0.6rem 1rem 0.6rem 2rem;
+  max-width: 34rem;
+  border-radius: 10px;
+  background: rgba(232, 162, 92, 0.15);
+  font-family: var(--font-serif);
+  color: #5a4636;
+}
+
+.writer__hints li + li {
+  margin-top: 0.3rem;
+}
+
+.writer .sentence {
+  justify-content: center;
+  margin: 0 0 1rem;
+}
+
+.writer__feedback {
   min-height: 1.5em;
   margin: 1rem 0 0;
   font-family: var(--font-serif);
@@ -586,7 +629,7 @@ body {
   text-align: center;
 }
 
-.letter__actions {
+.writer__actions {
   display: flex;
   justify-content: center;
   gap: 0.75rem;

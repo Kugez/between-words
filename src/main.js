@@ -3,13 +3,19 @@ import { freshState, loadState, saveState } from './state.js';
 import { titleScene } from './scenes/title.js';
 import { arrivalScene } from './scenes/arrival.js';
 import { villageScene } from './scenes/village.js';
-import { endingScene } from './scenes/ending.js';
+import { crossingScene, endingScene, finaleScene } from './scenes/ending.js';
+import { campScene } from './scenes/camp.js';
+import { bridgeScene } from './scenes/bridge.js';
 
 const SCENES = {
   title: titleScene,
   arrival: arrivalScene,
   village: villageScene,
   ending: endingScene,
+  crossing: crossingScene,
+  camp: campScene,
+  bridge: bridgeScene,
+  finale: finaleScene,
 };
 
 const app = document.getElementById('app');

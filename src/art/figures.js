@@ -22,10 +22,31 @@ function features(kind, f) {
         s('path', { d: 'M-14,-166 C-14,-130 14,-130 14,-166 Z', fill: '#d9d4cc' }),
         s('path', { d: 'M-24,-184 C-24,-210 24,-210 24,-184 C14,-196 -14,-196 -24,-184 Z', fill: '#d9d4cc' }),
       ];
+    // The mountain people wear pointed felt hats.
+    case 'mason':
+      return [
+        s('path', { d: 'M-26,-190 L0,-236 L26,-190 Z', fill: '#7b6a55' }),
+
+      ];
+    case 'smith':
+      return [
+        s('path', { d: 'M-24,-192 L4,-230 L24,-192 Z', fill: '#3d3a3f' }),
+        s('path', { d: `M${-6 * f},-160 L${10 * f},-160`, stroke: '#2a2226', 'stroke-width': 4, 'stroke-linecap': 'round' }),
+      ];
+    case 'friend':
+      return [s('path', { d: 'M-22,-190 L0,-226 L22,-190 Z', fill: '#b5473a' })];
+    case 'chief':
+      return [
+        s('path', { d: 'M-28,-190 L0,-246 L28,-190 Z', fill: '#2f4a3e' }),
+        s('path', { d: 'M-28,-190 L28,-190', stroke: '#c9a24a', 'stroke-width': 5 }),
+
+      ];
     default:
       return [];
   }
 }
+
+const MOUNTAIN = new Set(['mason', 'smith', 'friend', 'chief']);
 
 // A villager standing with feet at (x, y). Everything is drawn in local
 // coordinates (up is negative y) and scaled, so one shape serves adult and child.
@@ -44,8 +65,14 @@ export function createFigure({ id, kind, x, y, scale = 1, facing = 1, robe, trim
   );
   const body = s('g', { class: 'body' },
     kind === 'elder' && s('path', { d: `M${-34 * facing},-170 L${-34 * facing},0`, stroke: '#6b5440', 'stroke-width': 7, 'stroke-linecap': 'round' }),
-    s('path', { d: 'M-38,0 C-41,-60 -34,-120 -24,-152 Q0,-166 24,-152 C34,-120 41,-60 38,0 Z', fill: robe }),
+    s('path', {
+      d: MOUNTAIN.has(kind)
+        ? 'M-42,0 L-30,-150 L0,-162 L30,-150 L42,0 Z'
+        : 'M-38,0 C-41,-60 -34,-120 -24,-152 Q0,-166 24,-152 C34,-120 41,-60 38,0 Z',
+      fill: robe,
+    }),
     s('path', { d: 'M-38,0 C-39,-12 39,-12 38,0 Z', fill: trim, opacity: 0.6 }),
+    kind === 'chief' && s('path', { d: 'M-30,-150 L0,-134 L30,-150', fill: 'none', stroke: '#c9a24a', 'stroke-width': 5 }),
     head,
     arm,
   );
@@ -124,6 +151,16 @@ export function createItem(kind) {
       return s('g', { class: 'item' },
         s('rect', { x: -22, y: -16, width: 44, height: 32, rx: 2, fill: '#efe6d2' }),
         s('path', { d: 'M-14,-4 L-6,-4 M-2,-4 L12,-4 M-12,6 L10,6', stroke: '#7a6a58', 'stroke-width': 2.5, 'stroke-linecap': 'round' }),
+      );
+    case 'stone':
+      return s('g', { class: 'item' },
+        s('path', { d: 'M-16,8 L-12,-8 L4,-13 L16,-2 L10,10 Z', fill: '#8c8597' }),
+        s('path', { d: 'M-8,-6 L4,-10', stroke: '#b3adbd', 'stroke-width': 2, 'stroke-linecap': 'round' }),
+      );
+    case 'ember':
+      return s('g', { class: 'item' },
+        s('circle', { r: 26, fill: 'url(#v-glow)' }),
+        s('circle', { r: 7, fill: '#ffd59a' }),
       );
     case 'boat':
       return s('g', { class: 'item' },

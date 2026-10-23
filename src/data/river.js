@@ -1,5 +1,5 @@
-// The river people's language: glyphs, the meanings a player can pick from,
-// how the notebook groups glyphs, and every scripted conversation in the village.
+// The river people's language: glyphs, how the notebook groups them, and
+// every scripted conversation in the village.
 //
 // Grammar, so new lines stay consistent:
 //   subject, recipient, object, verb      minä sinä kala antaa = I give you fish
@@ -20,38 +20,15 @@ export const GLYPHS = {
   ei: 'M50 16 L50 84 M26 64 L74 36',
   monta: 'M46 28 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M26 66 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M66 66 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0',
   hyva: 'M20 50 C32 80 68 80 80 50 M50 18 L50 40',
+  silta: 'M16 78 L16 54 C30 30 70 30 84 54 L84 78 M16 60 L84 60',
 };
 
-// Everything the player can choose from in the notebook. Distractors are
-// deliberate: "take" competes with "give", "eat" with "want".
-export const WORDS = {
-  mina: { fi: 'minä', en: 'I' },
-  sina: { fi: 'sinä', en: 'you' },
-  lapsi: { fi: 'lapsi', en: 'child' },
-  vanhus: { fi: 'vanhus', en: 'elder' },
-  kala: { fi: 'kala', en: 'fish' },
-  vesi: { fi: 'vesi', en: 'water' },
-  tuli: { fi: 'tuli', en: 'fire' },
-  leipa: { fi: 'leipä', en: 'bread' },
-  silta: { fi: 'silta', en: 'bridge' },
-  antaa: { fi: 'antaa', en: 'give' },
-  ottaa: { fi: 'ottaa', en: 'take' },
-  haluta: { fi: 'haluta', en: 'want' },
-  syoda: { fi: 'syödä', en: 'eat' },
-  hyva: { fi: 'hyvä', en: 'good' },
-  paha: { fi: 'paha', en: 'bad' },
-  ei: { fi: 'ei', en: 'not' },
-  kylla: { fi: 'kyllä', en: 'yes' },
-  monta: { fi: 'monta', en: 'many' },
-  yksi: { fi: 'yksi', en: 'one' },
-};
-
-// A glyph's correct meaning is the word with the same id.
+// A river glyph's correct meaning is the word with the same id.
 export const PAGES = [
   { id: 'I', glyphs: ['mina', 'sina', 'lapsi'] },
   { id: 'II', glyphs: ['kala', 'vesi', 'tuli', 'leipa'] },
   { id: 'III', glyphs: ['antaa', 'haluta', 'hyva'] },
-  { id: 'IV', glyphs: ['ei', 'monta'] },
+  { id: 'IV', glyphs: ['ei', 'monta', 'silta'] },
 ];
 
 export const LETTER = ['mina', 'sina', 'kala', 'monta', 'antaa'];
@@ -83,7 +60,8 @@ export const DIALOGUES = {
     { who: 'elder', say: ['tuli', 'hyva'], act: { type: 'point', who: 'elder', at: 'campfire' } },
     { who: 'elder', say: ['tuli', 'monta'], act: { type: 'point', who: 'elder', at: 'farfires' } },
     { who: 'elder', say: ['vesi'], act: { type: 'point', who: 'elder', at: 'river' } },
-    { who: 'elder', say: ['hyva', 'ei'], act: { type: 'shake', who: 'elder', at: 'bridge' } },
+    { who: 'elder', say: ['silta'], act: { type: 'point', who: 'elder', at: 'bridge' } },
+    { who: 'elder', say: ['silta', 'hyva', 'ei'], act: { type: 'shake', who: 'elder', at: 'bridge' } },
     { who: 'elder', say: ['lapsi', 'hyva'], act: { type: 'point', who: 'elder', at: 'child' } },
   ],
   letter: [
@@ -92,4 +70,4 @@ export const DIALOGUES = {
   ],
 };
 
-export const ALL_GLYPHS = PAGES.flatMap((p) => p.glyphs);
+

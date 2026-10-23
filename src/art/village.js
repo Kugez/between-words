@@ -1,9 +1,7 @@
 import { s } from '../dom.js';
 import { seeded } from './random.js';
 import { createFigure } from './figures.js';
-
-export const W = 1600;
-export const H = 900;
+import { W, H, flame, playerFigure, river, sky, world } from './common.js';
 
 // Places characters point at or hand things to.
 export const POINTS = {
@@ -23,18 +21,6 @@ const CAST = [
   { id: 'elder', kind: 'elder', x: 1250, y: 780, facing: -1, robe: '#6f6788', trim: '#4d4762' },
 ];
 
-function glow(x, y, r, opacity = 0.7) {
-  return s('circle', { cx: x, cy: y, r, fill: 'url(#v-glow)', opacity });
-}
-
-function flame(x, y, size) {
-  return s('g', { class: 'ember-flicker' },
-    glow(x, y - size, size * 4),
-    s('path', { d: `M${x - size},${y} C${x - size},${y - size * 1.4} ${x},${y - size * 1.6} ${x},${y - size * 2.6} C${x + size * 0.4},${y - size * 1.6} ${x + size},${y - size * 1.4} ${x + size},${y} Z`, fill: '#f0b25e' }),
-    s('path', { d: `M${x - size * 0.5},${y} C${x - size * 0.5},${y - size * 0.8} ${x},${y - size} ${x},${y - size * 1.6} C${x + size * 0.2},${y - size} ${x + size * 0.5},${y - size * 0.8} ${x + size * 0.5},${y} Z`, fill: '#ffe2a8' }),
-  );
-}
-
 function farBank(rand) {
   const ridge = [];
   for (let i = 0; i <= 32; i++) ridge.push(`${(i / 32) * W},${(395 + (rand() - 0.5) * 22).toFixed(1)}`);
@@ -45,19 +31,6 @@ function farBank(rand) {
     s('path', { d: `M0,430 L${peaks.join(' L')} L${W},430 Z`, fill: '#3c3a57' }),
     s('path', { d: `M0,440 L${ridge.join(' L')} L${W},440 Z`, fill: '#2a2b40' }),
     ...fires,
-  ];
-}
-
-function river(rand) {
-  const shimmer = Array.from({ length: 26 }, () => {
-    const x = rand() * W;
-    const y = 445 + rand() * 110;
-    const w = 20 + rand() * 60;
-    return s('path', { d: `M${x},${y} L${x + w},${y}`, stroke: '#d9e6e4', 'stroke-width': 2, opacity: (0.1 + rand() * 0.25).toFixed(2), 'stroke-linecap': 'round' });
-  });
-  return [
-    s('rect', { x: 0, y: 430, width: W, height: 140, fill: 'url(#v-river)' }),
-    s('g', { class: 'mist' }, ...shimmer),
   ];
 }
 
@@ -109,68 +82,25 @@ function houses() {
   return [house(20, 110, 70), house(118, 90, 52), house(1500, 96, 64)];
 }
 
-function playerFigure() {
-  return s('g', { class: 'player', 'aria-hidden': 'true' },
-    glow(800, 838, 70, 0.5),
-    s('path', { d: 'M790,900 L796,836 M790,836 L806,836 L804,852 L792,852 Z', stroke: '#e8a25c', 'stroke-width': 3, fill: '#ffd59a' }),
-    s('path', { d: 'M610,900 C612,860 640,836 700,834 C760,836 788,860 790,900 Z', fill: '#151826' }),
-    s('circle', { cx: 700, cy: 812, r: 34, fill: '#151826' }),
-  );
-}
-
-// Fill wide screens edge to edge; on narrow ones show the whole village.
-function fit() {
-  return window.innerWidth / window.innerHeight > 1.5 ? 'xMidYMid slice' : 'xMidYMid meet';
-}
-
 export function buildVillage() {
   const rand = seeded(11);
   const figures = Object.fromEntries(CAST.map((c) => [c.id, createFigure(c)]));
-
-  const svg = s('svg', {
-    class: 'backdrop village',
-    viewBox: `0 0 ${W} ${H}`,
-    preserveAspectRatio: fit(),
-    role: 'img',
-  },
-    s('defs', null,
-      s('linearGradient', { id: 'v-sky', x1: 0, y1: 0, x2: 0, y2: 1 },
-        s('stop', { offset: '0', 'stop-color': '#121827' }),
-        s('stop', { offset: '1', 'stop-color': '#45405f' }),
-      ),
-      s('linearGradient', { id: 'v-river', x1: 0, y1: 0, x2: 0, y2: 1 },
-        s('stop', { offset: '0', 'stop-color': '#5f8f98' }),
-        s('stop', { offset: '1', 'stop-color': '#2b4b56' }),
-      ),
-      s('radialGradient', { id: 'v-glow' },
-        s('stop', { offset: '0', 'stop-color': '#e8a25c', 'stop-opacity': '0.75' }),
-        s('stop', { offset: '1', 'stop-color': '#e8a25c', 'stop-opacity': '0' }),
-      ),
-    ),
-    s('rect', { width: W, height: H, fill: 'url(#v-sky)' }),
-    ...Array.from({ length: 70 }, () => s('circle', {
-      cx: (rand() * W).toFixed(1), cy: (rand() * 240).toFixed(1), r: (rand() * 1.3 + 0.3).toFixed(2), fill: '#f3ead8', opacity: (rand() * 0.5 + 0.2).toFixed(2),
-    })),
-    ...farBank(rand),
-    ...river(rand),
-    s('path', { d: `M0,570 C300,555 600,585 900,566 C1150,552 1400,580 ${W},562 L${W},${H} L0,${H} Z`, fill: '#2b2f42' }),
-    s('path', { d: `M0,640 C400,628 900,650 ${W},632 L${W},${H} L0,${H} Z`, fill: '#323549' }),
-    ...houses(),
-    bridge(),
-    rack(),
-    oven(),
-    campfire(),
-    ...Object.values(figures).map((f) => f.el),
-    s('g', { class: 'items' }),
-    playerFigure(),
-    s('g', { class: 'bubbles' }),
-  );
-
-  const onResize = () => {
-    if (!svg.isConnected) return window.removeEventListener('resize', onResize);
-    svg.setAttribute('preserveAspectRatio', fit());
-  };
-  window.addEventListener('resize', onResize);
-
-  return { svg, figures, items: svg.querySelector('.items'), bubbles: svg.querySelector('.bubbles') };
+  return world({
+    className: 'village',
+    points: POINTS,
+    figures,
+    scenery: [
+      ...sky(rand),
+      ...farBank(rand),
+      ...river(rand),
+      s('path', { d: `M0,570 C300,555 600,585 900,566 C1150,552 1400,580 ${W},562 L${W},${H} L0,${H} Z`, fill: '#2b2f42' }),
+      s('path', { d: `M0,640 C400,628 900,650 ${W},632 L${W},${H} L0,${H} Z`, fill: '#323549' }),
+      ...houses(),
+      bridge(),
+      rack(),
+      oven(),
+      campfire(),
+    ],
+    foreground: [playerFigure()],
+  });
 }
