@@ -7,6 +7,18 @@ and helping two peoples understand each other again.
 
 **Play:** https://kugez.github.io/between-words/
 
+## How it plays
+
+You arrive in a riverside village where nobody speaks your language. Tap the
+villagers and watch what they do while they speak. Every glyph you see goes
+into your notebook, where you guess its meaning. A page of the notebook is
+confirmed only when every guess on it is right, and then those glyphs are
+translated wherever they appear. To finish the chapter, write a letter for a
+child in the villagers' own language.
+
+The river language lives in `src/data/river.js`, together with its grammar
+notes and every scripted conversation.
+
 ## Running locally
 
 The game is plain HTML, CSS and JavaScript with no build step. It uses ES

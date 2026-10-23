@@ -2,10 +2,14 @@ import { detectLanguage, translator } from './i18n.js';
 import { freshState, loadState, saveState } from './state.js';
 import { titleScene } from './scenes/title.js';
 import { arrivalScene } from './scenes/arrival.js';
+import { villageScene } from './scenes/village.js';
+import { endingScene } from './scenes/ending.js';
 
 const SCENES = {
   title: titleScene,
   arrival: arrivalScene,
+  village: villageScene,
+  ending: endingScene,
 };
 
 const app = document.getElementById('app');
@@ -17,8 +21,9 @@ function render(name) {
   document.documentElement.lang = state.lang;
   document.title = t('title');
 
-  const next = scene({ t, state, go, toggleLanguage });
+  const next = scene({ t, state, go, save: () => saveState(state), toggleLanguage });
   // Fade out whatever is on screen; a quick double click can leave several.
+  app.querySelectorAll('.overlay').forEach((o) => o.remove());
   for (const previous of app.querySelectorAll('.scene:not(.scene--leaving)')) {
     previous.classList.add('scene--leaving');
     previous.setAttribute('aria-hidden', 'true');
@@ -28,7 +33,7 @@ function render(name) {
   }
   app.querySelector('noscript')?.remove();
   app.append(next);
-  (next.querySelector('.panel button') || next.querySelector('button'))?.focus({ preventScroll: true });
+  next.querySelector('.panel button')?.focus({ preventScroll: true });
 }
 
 function go(name, { reset = false } = {}) {

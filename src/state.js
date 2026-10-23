@@ -2,10 +2,21 @@
 // browsing, blocked site data), so every access is guarded and the game
 // keeps working in memory.
 const KEY = 'between-words/save';
-const VERSION = 1;
+const VERSION = 2;
 
 export function freshState(lang) {
-  return { version: VERSION, lang, scene: 'title', started: false };
+  return {
+    version: VERSION,
+    lang,
+    scene: 'title',
+    started: false,
+    seen: {},
+    sentences: [],
+    guesses: {},
+    confirmed: {},
+    talked: {},
+    letterDone: false,
+  };
 }
 
 export function loadState(fallbackLang) {
