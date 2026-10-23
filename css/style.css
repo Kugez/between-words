@@ -1,0 +1,175 @@
+:root {
+  --ink: #f3ead8;
+  --ink-dim: #b9b2a3;
+  --night: #1d2433;
+  --dusk: #3b3f5c;
+  --ember: #e8a25c;
+  --river: #5f9ea8;
+  --stone: #8c8597;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--night);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 1.2s ease both;
+}
+
+.scene--leaving {
+  animation: fade-out 0.6s ease both;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 16px;
+  max-width: 34rem;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 8vw, 4.5rem);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.25em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--ink-dim);
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  margin: 0 0 2.5em;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button {
+  font: inherit;
+  font-size: 1.05rem;
+  min-width: 12rem;
+  padding: 0.7rem 1.6rem;
+  color: var(--ink);
+  background: rgba(29, 36, 51, 0.55);
+  border: 1px solid rgba(243, 234, 216, 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: rgba(232, 162, 92, 0.25);
+  border-color: var(--ember);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.button--quiet {
+  min-width: 0;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-dim);
+}
+
+.corner {
+  position: absolute;
+  z-index: 2;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+}
+
+.text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  line-height: 1.6;
+  margin: 0 0 2em;
+}
+
+.mist {
+  animation: drift 40s linear infinite alternate;
+}
+
+.mist--slow {
+  animation-duration: 70s;
+}
+
+.ember-flicker {
+  animation: flicker 3.2s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes drift {
+  from { transform: translateX(-6%); }
+  to { transform: translateX(6%); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.85; }
+  45% { opacity: 1; }
+  60% { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}
